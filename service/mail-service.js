@@ -1,13 +1,16 @@
+import dotenv from 'dotenv'
+
+dotenv.config('./.env');
 import nodeMailer from 'nodemailer';
+
 
 class MailService {
     constructor() {
-        const host = process.env.SMTP_HOST || 'smtp.gmail.com';
-        const port = Number(process.env.SMTP_PORT) || 587;
-        const user = process.env.SMTP_USER || 'squadof25@gmail.com';
+        const host = process.env.SMTP_HOST;
+        const port = Number(process.env.SMTP_PORT);
+        const user = process.env.SMTP_USER;
         // Log SMTP config (do not log passwords in production)
         console.log('MailService: SMTP config:', { host, port, user });
-        console.log(process.env.TEST);
 
         this.transporter = nodeMailer.createTransport({
             host,
@@ -15,7 +18,7 @@ class MailService {
             secure: false,
             auth: {
                 user,
-                pass: 'azxfjwphhrncpogb' // In production, use environment variables or secure vaults for sensitive data
+                pass: process.env.SMTP_PASSWORD // In production, use environment variables or secure vaults for sensitive data
             }
         });
     }
