@@ -4,55 +4,57 @@ import nodemailer from 'nodemailer';
 dotenv.config({ path: './.env' });
 
 class MailService {
-    constructor() {
-        const host = process.env.SMTP_HOST;
-        const port = Number(process.env.SMTP_PORT);
-        const user = process.env.SMTP_USER;
+  transporter: any;
 
-        if (process.env.NODE_ENV !== 'production') {
-            console.log('MailService initialized:', { host, port, user });
-        }
+  constructor() {
+    const host = process.env.SMTP_HOST;
+    const port = Number(process.env.SMTP_PORT);
+    const user = process.env.SMTP_USER;
 
-        this.transporter = nodemailer.createTransport({
-            host,
-            port,
-            secure: port === 465,
-            auth: {
-                user,
-                pass: process.env.SMTP_PASSWORD,
-            },
-        });
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('MailService initialized:', { host, port, user });
     }
 
-    async sendActivationMail(to, activationLink) {
-        try {
-            await this.transporter.verify();
+    this.transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: {
+        user,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    });
+  }
 
-            const appName = process.env.APP_NAME || 'Your App';
+  async sendActivationMail(to: string, activationLink: string) {
+    try {
+      await this.transporter.verify();
 
-            const mailOptions = {
-                from: `"${appName}" <${process.env.SMTP_USER}>`,
-                to,
-                subject: `🚀 Activate Your ${appName} Account – Let's Get Started! 🎉`,
-                text: `Hey there! 👋\n\nThanks for joining ${appName}! 🎈\nClick the link to activate your account and unlock everything:\n${activationLink}\n\nThis link expires in 24 hours ⏳\n\nDidn't sign up? Just ignore this email 😊\n\nCheers,\nThe ${appName} Team`,
-                html: this.generateActivationHtml(appName, activationLink),
-            };
+      const appName = process.env.APP_NAME || 'App';
 
-            await this.transporter.sendMail(mailOptions);
-            console.log(`Activation email sent to ${to}`);
-        } catch (err) {
-            console.error('Failed to send activation email:', err);
-            throw new Error(`Email send failed: ${err.message}`);
-        }
+      const mailOptions = {
+        from: `"${appName}" <${process.env.SMTP_USER}>`,
+        to,
+        subject: `🚀 Activate Your ${appName} Account – Let's Get Started! 🎉`,
+        text: `Hey there! 👋\n\nThanks for joining ${appName}! 🎈\nClick the link to activate your account and unlock everything:\n${activationLink}\n\nThis link expires in 24 hours ⏳\n\nDidn't sign up? Just ignore this email 😊\n\nCheers,\nThe ${appName} Team`,
+        html: this.generateActivationHtml(appName, activationLink),
+      };
+
+      await this.transporter.sendMail(mailOptions);
+      console.log(`Activation email sent to ${to}`);
+    } catch (err: any) {
+      console.error('Failed to send activation email:', err);
+      throw new Error(`Email send failed: ${err.message}`);
     }
+  }
 
-    generateActivationHtml(appName, link) {
-        const apiUrl = process.env.API_URL || 'https://your-app.com';
+  generateActivationHtml(appName: string, link: string) {
+    const apiUrl = process.env.API_URL || 'https://your-app.com';
 
-        const buttonGifUrl = 'https://your-cdn.com/pulsing-activate-button.gif';
-        const buttonStaticUrl = 'https://your-cdn.com/static-activate-button.png';
+    const buttonGifUrl = 'https://your-cdn.com/pulsing-activate-button.gif';
+    const buttonStaticUrl = 'https://your-cdn.com/static-activate-button.png';
 
-        return `
+    return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -144,7 +146,7 @@ class MailService {
 </body>
 </html>
     `;
-    }
+  }
 }
 
 export default new MailService();
