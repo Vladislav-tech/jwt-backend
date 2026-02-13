@@ -10,9 +10,9 @@ class UserService {
     async registration(email, password) {
         const candidate = await userModel.findOne({ email });
         if (candidate) {
-            throw ApiError.BadRequest(`Пользователь с почтовым адресом ${email} уже существует`);
+            throw ApiError.BadRequest(`User with email ${email} already exists`);
         }
-        const hashPassword = await bcrypt.hash(password, 3);
+        const hashPassword = await bcrypt.hash(password, 10);
         const activationLink = uuidv4();
         const user = await userModel.create({ email, password: hashPassword, activationLink });
         await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
@@ -30,7 +30,7 @@ class UserService {
     async activate(activationLink) {
         const user = await userModel.findOne({ activationLink });
         if (!user) {
-            throw ApiError.BadRequest('Неккоректная ссылка активации');
+            throw ApiError.BadRequest('Invalid activation link');
         }
         user.isActivated = true;
         await user.save()

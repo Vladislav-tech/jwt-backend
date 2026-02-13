@@ -1,7 +1,6 @@
 import userService from "../service/user-service.js";
 import { validationResult } from "express-validator";
 import ApiError from "../exceptions/api-error.js";
-import userModel from "../models/user-model.js";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -25,7 +24,7 @@ class UserController {
 
             return res.json(userData)
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
 
@@ -82,7 +81,6 @@ class UserController {
             await userService.activate(activationLink);
             return res.redirect(process.env.CLIENT_URL);
         } catch (error) {
-            console.log(error);
             next(error);
 
         }

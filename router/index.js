@@ -6,7 +6,7 @@ import AuthMiddleware from "../middlewares/auth-middleware.js";
 const router = Router();
 
 router.post('/registration', body('email').isEmail(), body('password').isLength({ min: 4, max: 20 }), userController.registration);
-router.post('/login', userController.login);
+router.post('/login', body('email').isEmail(), body('password').isLength({ min: 4, max: 20 }), userController.login);
 router.post('/logout', userController.logout);
 router.get('/activate/:link', userController.activate);
 router.get('/refresh', userController.refresh);
