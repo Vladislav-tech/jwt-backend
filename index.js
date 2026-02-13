@@ -12,11 +12,13 @@ import mongoose from 'mongoose';
 
 import router from './router/index.js';
 
+import { MINUTE } from './utils/constants.js';
+
 const PORT = process.env.PORT || 5000;
 const app = express();
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 min
+  windowMs: 15 * MINUTE,
   max: 100,
   message: 'Too many requests from this IP, please try again after 15 minutes',
 });

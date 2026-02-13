@@ -1,12 +1,7 @@
 import userService from "../service/user-service.js";
 import { validationResult } from "express-validator";
 import ApiError from "../exceptions/api-error.js";
-
-const SECOND = 1000;
-const MINUTE = 60 * SECOND;
-const HOUR = 60 * MINUTE;
-const DAY = 24 * HOUR;
-const MONTH = 30 * DAY;
+import { MONTH } from "../utils/constants.js";
 
 class UserController {
     async registration(req, res, next) {
