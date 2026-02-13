@@ -9,12 +9,26 @@ import ApiError from "../exceptions/api-error.js";
 class UserService {
     async registration(email, password) {
         const candidate = await userModel.findOne({ email });
+
         if (candidate) {
-            throw ApiError.BadRequest(`User with email ${email} already exists`);
+            if (!candidate.isActivated && candidate.activationExpires < new Date()) {
+
+                await userModel.deleteOne({ _id: candidate._id });
+
+            } else {
+                throw ApiError.BadRequest(`User with email ${email} already exists`);
+            }
         }
         const hashPassword = await bcrypt.hash(password, 10);
         const activationLink = uuidv4();
-        const user = await userModel.create({ email, password: hashPassword, activationLink });
+        const activationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+
+        const user = await userModel.create({
+            email,
+            password: hashPassword,
+            activationLink,
+            activationExpires,
+        });
         await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
         const userDto = new UserDto(user)
@@ -29,18 +43,33 @@ class UserService {
 
     async activate(activationLink) {
         const user = await userModel.findOne({ activationLink });
+
         if (!user) {
             throw ApiError.BadRequest('Invalid activation link');
         }
-        user.isActivated = true;
-        await user.save()
-    }
 
+        if (user.activationExpires < new Date()) {
+            throw ApiError.BadRequest('Activation link has expired');
+        }
+
+        user.isActivated = true;
+        user.activationLink = null;
+        user.activationExpires = null;
+        await user.save();
+    }
     async login(email, password) {
         const user = await userModel.findOne({ email });
 
         if (!user) {
             throw ApiError.BadRequest('User not found');
+        }
+
+        if (!user.isActivated) {
+            throw ApiError.BadRequest('Account not activated. Please check your email for the activation link.');
+        }
+
+        if (user.activationExpires && user.activationExpires < new Date()) {
+            throw ApiError.BadRequest('Activation link has expired. Please request a new activation email.');
         }
 
         const isPassEquals = await bcrypt.compare(password, user.password);
