@@ -19,8 +19,10 @@ class UserController {
             const userData = await userService.registration(email, password);
             res.cookie('refreshToken', userData.refreshToken, {
                 maxAge: MONTH,
-                httpOnly: true
-            });
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'Strict'
+            });;
 
             return res.json(userData)
         } catch (error) {
@@ -34,8 +36,10 @@ class UserController {
             const userData = await userService.login(email, password);
             res.cookie('refreshToken', userData.refreshToken, {
                 maxAge: MONTH,
-                httpOnly: true
-            });
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'Strict'
+            });;
 
             return res.json(userData)
         } catch (error) {
@@ -59,7 +63,12 @@ class UserController {
         try {
             const { refreshToken } = req.cookies;
             const userData = await userService.refresh(refreshToken);
-            res.cookie('refreshToken', userData.refreshToken, { maxAge: MINUTE * 15, httpOnly: true })
+            res.cookie('refreshToken', userData.refreshToken, {
+                maxAge: 15 * MINUTE,
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'Strict'
+            });
             return res.json(userData);
         } catch (e) {
             next(e);
