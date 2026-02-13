@@ -64,7 +64,7 @@ class UserController {
             const { refreshToken } = req.cookies;
             const userData = await userService.refresh(refreshToken);
             res.cookie('refreshToken', userData.refreshToken, {
-                maxAge: 15 * MINUTE,
+                maxAge: MONTH,
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'Strict'

@@ -5,6 +5,7 @@ dotenv.config({ path: './.env' })
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import errorMiddleware from './middlewares/error-middleware.js';
 
 import mongoose from 'mongoose';
@@ -14,6 +15,12 @@ import router from './router/index.js';
 const PORT = process.env.PORT || 5000;
 const app = express();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 100,
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+});
+app.use(limiter); 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({

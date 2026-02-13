@@ -49,10 +49,8 @@ class MailService {
     generateActivationHtml(appName, link) {
         const apiUrl = process.env.API_URL || 'https://your-app.com';
 
-        // Пульсирующая кнопка как GIF (рекомендую создать отдельно в Canva/Figma → экспорт GIF)
-        // Альтернатива: статичная кнопка + CSS pulse только для Apple Mail
-        const buttonGifUrl = 'https://your-cdn.com/pulsing-activate-button.gif'; // ← загрузи свой GIF
-        const buttonStaticUrl = 'https://your-cdn.com/static-activate-button.png'; // fallback
+        const buttonGifUrl = 'https://your-cdn.com/pulsing-activate-button.gif';
+        const buttonStaticUrl = 'https://your-cdn.com/static-activate-button.png';
 
         return `
 <!DOCTYPE html>
