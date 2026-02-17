@@ -112,9 +112,45 @@ class UserService {
     };
   }
 
-  async getAllUsers() {
-    const users = await userModel.find();
-    return users;
+  async addFavorite(userId: string, ticker: string) {
+    const normalizedTicker = ticker.toLowerCase();
+    if (!normalizedTicker.endsWith('usdt') || !/^[a-z]+usdt$/.test(normalizedTicker)) {
+      throw ApiError.BadRequest('Invalid ticker format. Must be like "btcusdt" (lowercase letters + usdt)');
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      throw ApiError.BadRequest('User not found');
+    }
+
+    if (!user.favorites.includes(normalizedTicker)) {
+      user.favorites.push(normalizedTicker);
+      await user.save();
+    };
+
+    return user.favorites;
+  }
+
+  async removeFavorite(userId: string, ticker: string) {
+    const normalizedTicker = ticker.toLowerCase();
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      throw ApiError.BadRequest('User not found');
+    }
+
+    user.favorites = user.favorites.filter((t: string) => t !== normalizedTicker);
+    await user.save();
+
+    return user.favorites;
+  }
+
+  async getFavorites(userId: string) {
+    const user = await userModel.findById(userId);
+    if (!user) {
+      throw ApiError.BadRequest('User not found');
+    }
+    return user.favorites;
   }
 }
 

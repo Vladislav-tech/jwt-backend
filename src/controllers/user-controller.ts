@@ -71,15 +71,6 @@ class UserController {
     }
   }
 
-  async getUsers(req: Request, res: Response, next: NextFunction) {
-    try {
-      const users = await userService.getAllUsers();
-      return res.json(users);
-    } catch (error) {
-      next(error as any);
-    }
-  }
-
   async activate(req: Request, res: Response, next: NextFunction) {
     try {
       const activationLink = req.params.link as string;
@@ -88,6 +79,46 @@ class UserController {
     } catch (error) {
       next(error as any);
 
+    }
+  }
+
+async addFavorite(req: Request, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(ApiError.BadRequest('Validation error', errors.array()));
+      }
+      const { ticker } = req.body as { ticker: string };
+      const userId = req.user.id;  // Из JWT via auth middleware
+      const favorites = await userService.addFavorite(userId, ticker);
+      return res.json({ favorites });
+    } catch (error) {
+      next(error as any);
+    }
+  }
+
+  async removeFavorite(req: Request, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(ApiError.BadRequest('Validation error', errors.array()));
+      }
+      const { ticker } = req.body as { ticker: string };
+      const userId = req.user.id;
+      const favorites = await userService.removeFavorite(userId, ticker);
+      return res.json({ favorites });
+    } catch (error) {
+      next(error as any);
+    }
+  }
+
+  async getFavorites(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user.id;
+      const favorites = await userService.getFavorites(userId);
+      return res.json({ favorites });
+    } catch (error) {
+      next(error as any);
     }
   }
 }

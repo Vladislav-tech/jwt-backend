@@ -6,6 +6,7 @@ const UserSchema = new Schema({
   isActivated: { type: Boolean, default: false },
   activationLink: { type: String },
   activationExpires: { type: Date },
+  favorites: { type: [String], default: [] },  
 });
 
 export default model('User', UserSchema);

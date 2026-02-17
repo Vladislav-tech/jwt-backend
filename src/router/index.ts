@@ -20,6 +20,21 @@ router.post(
 router.post('/logout', userController.logout);
 router.get('/activate/:link', userController.activate);
 router.get('/refresh', userController.refresh);
-router.get('/users', AuthMiddleware, userController.getUsers);
+
+router.post(
+  '/favorites/add',
+  AuthMiddleware,
+  body('ticker').isString().trim().notEmpty(),
+  userController.addFavorite
+);
+
+router.delete(
+  '/favorites/remove',
+  AuthMiddleware,
+  body('ticker').isString().trim().notEmpty(),
+  userController.removeFavorite
+);
+
+router.get('/favorites', AuthMiddleware, userController.getFavorites);
 
 export default router;
