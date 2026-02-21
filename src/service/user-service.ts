@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ApiError from '@/exceptions/api-error';
 
 class UserService {
-  async registration(email: string, password: string) {
+  async registration(email: string, password: string, name: string) {
     const candidate = await userModel.findOne({ email });
 
     if (candidate) {
@@ -26,6 +26,7 @@ class UserService {
       password: hashPassword,
       activationLink,
       activationExpires,
+      name,
     });
     await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
@@ -151,6 +152,17 @@ class UserService {
       throw ApiError.BadRequest('User not found');
     }
     return user.favorites;
+  }
+
+  async getUserInfo(userId: string) {
+    const user = await userModel.findById(userId);
+    if (!user) {
+      throw ApiError.BadRequest('User not found');
+    }
+    return {
+      email: user.email,
+      name: user.name,
+    }
   }
 }
 

@@ -11,8 +11,9 @@ class UserController {
       if (!errors.isEmpty()) {
         return next(ApiError.BadRequest('Error validation', errors.array()));
       }
-      const { email, password } = req.body as { email: string; password: string };
-      const userData = await userService.registration(email, password);
+      const { email, password, name } = req.body as { email: string; password: string, name: string };
+      console.log(`name: ${name}`)
+      const userData = await userService.registration(email, password, name);
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: MONTH,
         httpOnly: true,
@@ -117,6 +118,16 @@ async addFavorite(req: Request, res: Response, next: NextFunction) {
       const userId = req.user.id;
       const favorites = await userService.getFavorites(userId);
       return res.json({ favorites });
+    } catch (error) {
+      next(error as any);
+    }
+  }
+
+  async getUserInfo(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user.id;
+      const { email, name } = await userService.getUserInfo(userId);
+      return res.json({ email, name });
     } catch (error) {
       next(error as any);
     }

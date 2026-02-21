@@ -8,13 +8,13 @@ const router = Router();
 router.post(
   '/registration',
   body('email').isEmail(),
-  body('password').isLength({ min: 4, max: 20 }),
+  body('password').isLength({ min: 4, max: 64 }),
   userController.registration
 );
 router.post(
   '/login',
   body('email').isEmail(),
-  body('password').isLength({ min: 4, max: 20 }),
+  body('password').isLength({ min: 4, max: 64 }),
   userController.login
 );
 router.post('/logout', userController.logout);
@@ -34,6 +34,11 @@ router.delete(
   body('ticker').isString().trim().notEmpty(),
   userController.removeFavorite
 );
+
+router.get('/me',
+  AuthMiddleware,
+  userController.getUserInfo
+)
 
 router.get('/favorites', AuthMiddleware, userController.getFavorites);
 
