@@ -173,13 +173,15 @@ APP_NAME=MyApp
 
 ```typescript
 {
-  email: string;          // Unique, required
-  password: string;       // Hash, required
-  isActivated: boolean;   // Activation status
-  activationLink: string; // Activation link
-  activationExpires: Date;// Link expiration date
-  favorites: string[];    // Array of tickers (e.g., ["btcusdt", "ethusdt"])
-  name: string;           // User name
+  email: string;           // Unique, required
+  password: string;        // Hash, required
+  isActivated: boolean;    // Activation status
+  activationLink: string;  // Activation link
+  activationExpires: Date; // Link expiration date
+  favorites: string[];     // Array of tickers (e.g., ["btcusdt", "ethusdt"])
+  name: string;            // User name, required
+  registrationDate: Date;  // Registration date (immutable, set by backend)
+  lastSignInDate: Date;    // Last sign-in date (updated on login/refresh)
 }
 ```
 
@@ -218,7 +220,9 @@ curl -X POST http://localhost:5000/api/registration \
     "email": "user@example.com",
     "name": "John Doe",
     "isActivated": false,
-    "favorites": []
+    "favorites": [],
+    "registrationDate": "2026-02-23T10:00:00.000Z",
+    "lastSignInDate": "2026-02-23T12:30:00.000Z",
   }
 }
 ```
@@ -270,7 +274,10 @@ curl -X GET http://localhost:5000/api/me \
 ```json
 {
   "email": "user@example.com",
-  "name": "John Doe"
+  "name": "John Doe",
+  "favorites": 5,
+  "lastSignInDate": "2026-02-23T12:30:00.000Z",
+  "registrationDate": "2026-02-23T10:00:00.000Z"
 }
 ```
 
