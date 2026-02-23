@@ -8,7 +8,7 @@ import ApiError from '@/exceptions/api-error';
 import { DAY } from '@/utils/constants';
 
 class UserService {
-  async registration(email: string, password: string, name: string) {
+  async registration(email: string, password: string, name: string, registrationDate: string) {
     const candidate = await userModel.findOne({ email });
 
     if (candidate) {
@@ -22,12 +22,14 @@ class UserService {
     const activationLink = uuidv4();
     const activationExpires = new Date(Date.now() + DAY);
 
+
     const user = await userModel.create({
       email,
       password: hashPassword,
       activationLink,
       activationExpires,
       name,
+      registrationDate,
     });
     await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
@@ -81,6 +83,9 @@ class UserService {
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+    user.lastSignInDate = new Date();
+    await user.save();
 
     return {
       ...tokens,
@@ -163,6 +168,9 @@ class UserService {
     return {
       email: user.email,
       name: user.name,
+      favorites: user.favorites.length,
+      lastSignInDate: user.lastSignInDate,
+      registrationDate: user.registrationDate,
     }
   }
 }

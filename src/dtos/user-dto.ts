@@ -4,6 +4,8 @@ class UserDto {
   isActivated: boolean;
   favorites: string[];
   name: string;
+  registrationDate: string;
+  lastSignInDate: string;
 
   constructor(model: any) {
     this.email = model.email;
@@ -11,6 +13,8 @@ class UserDto {
     this.isActivated = model.isActivated;
     this.favorites = model.favorites || [];
     this.name = model.name;
+    this.registrationDate = model.registrationDate;
+    this.lastSignInDate = model.lastSignInDate;
   }
 }
 

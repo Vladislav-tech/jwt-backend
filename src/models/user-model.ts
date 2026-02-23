@@ -7,7 +7,9 @@ const UserSchema = new Schema({
   activationLink: { type: String },
   activationExpires: { type: Date },
   favorites: { type: [String], default: [] },
-  name: { type: String, required: true }
+  name: { type: String, required: true },
+  registrationDate: { type: Date, required: true, immutable: true },
+  lastSignInDate: { type: Date },
 });
 
 export default model('User', UserSchema);
