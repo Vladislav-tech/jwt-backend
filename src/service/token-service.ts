@@ -1,8 +1,15 @@
 import jwt from 'jsonwebtoken';
 import tokenModel from '@/models/token-model';
 
+interface JwtPayload {
+  id: string;
+  email: string;
+  isActivated: boolean;
+  name: string;
+}
+
 class TokenService {
-  generateTokens(payload: any) {
+  generateTokens(payload: JwtPayload) {
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET as string, { expiresIn: '15m' });
     const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET as string, { expiresIn: '30d' });
 

@@ -5,6 +5,7 @@ import tokenService from '@/service/token-service';
 import UserDto from '@/dtos/user-dto';
 import { v4 as uuidv4 } from 'uuid';
 import ApiError from '@/exceptions/api-error';
+import { DAY } from '@/utils/constants';
 
 class UserService {
   async registration(email: string, password: string, name: string) {
@@ -19,7 +20,7 @@ class UserService {
     }
     const hashPassword = await bcrypt.hash(password, 10);
     const activationLink = uuidv4();
-    const activationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+    const activationExpires = new Date(Date.now() + DAY);
 
     const user = await userModel.create({
       email,

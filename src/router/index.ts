@@ -8,13 +8,20 @@ const router = Router();
 router.post(
   '/registration',
   body('email').isEmail(),
-  body('password').isLength({ min: 4, max: 64 }),
+  body('password')
+    .isLength({ min: 8, max: 64 })
+    .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/)
+    .withMessage('Password must contain at least one letter, one number, and one special character'),
+  body('name').isString().trim().notEmpty().withMessage('Name is required'),
   userController.registration
 );
 router.post(
   '/login',
   body('email').isEmail(),
-  body('password').isLength({ min: 4, max: 64 }),
+  body('password')
+    .isLength({ min: 8, max: 64 })
+    .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/)
+    .withMessage('Password must contain at least one letter, one number, and one special character'),
   userController.login
 );
 router.post('/logout', userController.logout);

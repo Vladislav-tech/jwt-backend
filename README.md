@@ -23,7 +23,7 @@ A **Node.js + TypeScript** backend server with JWT authentication, email-based a
 - **Token refresh** for session extension
 - **Favorite tickers management** (add/remove/view)
 - **User info retrieval**
-- **Rate limiting** (100 requests per 15 minutes)
+- **Rate limiting** (125 requests per 10 minutes)
 - **CORS** with credentials support
 - **HttpOnly cookies** for refresh token
 - **Beautiful HTML emails** for account activation
@@ -41,7 +41,7 @@ A **Node.js + TypeScript** backend server with JWT authentication, email-based a
 | **Authentication** | JWT (jsonwebtoken) |
 | **Hashing** | bcrypt |
 | **Email** | Nodemailer |
-| **Validation** | express-validator, express-validation |
+| **Validation** | express-validator |
 | **Security** | cors, cookie-parser, express-rate-limit |
 | **Utilities** | uuid, dotenv, module-alias |
 
@@ -203,7 +203,7 @@ curl -X POST http://localhost:5000/api/registration \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
-    "password": "password123",
+    "password": "Pass123!",
     "name": "John Doe"
   }'
 ```
@@ -230,7 +230,7 @@ curl -X POST http://localhost:5000/api/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
-    "password": "password123"
+    "password": "Pass123!"
   }'
 ```
 
@@ -279,9 +279,10 @@ curl -X GET http://localhost:5000/api/me \
 ## 🔐 Security
 
 - **Passwords** are hashed using bcrypt (salt rounds = 10)
+- **Password requirements**: minimum 8 characters, must contain letter, digit, and special character
 - **Access token** expires in 15 minutes
 - **Refresh token** expires in 30 days, stored in httpOnly cookie
-- **Rate limiting**: 120 requests per 15 minutes per IP
+- **Rate limiting**: 125 requests per 10 minutes per IP
 - **CORS** configured for specific origin from `CLIENT_URL`
 - **Activation link** expires in 24 hours
 
